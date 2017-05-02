@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour {
     public static float score;
     public static int endCounter;
     //private int highScore;
-    private const int END_GAME = 500;
+    private const int END_GAME = 200;
     public Text scoreText;
 
 	// Use this for initialization

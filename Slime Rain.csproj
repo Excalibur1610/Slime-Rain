@@ -84,6 +84,7 @@
     <Compile Include="Assets\Scripts\BulletScript.cs" />
     <Compile Include="Assets\Scripts\ColorFade.cs" />
     <Compile Include="Assets\Scripts\DoClick2.cs" />
+    <Compile Include="Assets\Scripts\DocileSlimeMoveScript.cs" />
     <Compile Include="Assets\Scripts\FallScript.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Move2Script.cs" />

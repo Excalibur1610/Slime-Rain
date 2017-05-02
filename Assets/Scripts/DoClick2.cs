@@ -5,10 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class DoClick2 : MonoBehaviour {
     public string actionName;
+    public static bool submitted;
+
+    public void Start()
+    {
+        submitted = false;
+    }
 
 	public void OnClick()
     {
-        if (actionName.CompareTo("Play") == 0)
+        if (actionName.CompareTo("Play") == 0 || actionName.CompareTo("Again") == 0)
         {
             GameManager.score = 0;
             GameManager.endCounter = 0;
@@ -24,36 +30,13 @@ public class DoClick2 : MonoBehaviour {
         }
         else if (actionName.CompareTo("Submit") == 0)
         {
-
-            var buttons = GameObject.FindGameObjectsWithTag("submission");
-            foreach (GameObject b in buttons)
-            {
-                if (b != gameObject)
-                {
-                    Destroy(b);
-                }
-            }
-            Destroy(gameObject);
+            submitted = true;
         }
         else if (actionName.CompareTo("Quit") == 0)
         {
             GameManager.score = 0;
             GameManager.endCounter = 0;
             SceneManager.LoadScene("MainScreen");
-        }
-        else if (actionName.CompareTo("Again") == 0)
-        {
-            GameManager.score = 0;
-            GameManager.endCounter = 0;
-            var buttons = GameObject.FindGameObjectsWithTag("egb");
-            foreach (GameObject b in buttons)
-            {
-                if (b != gameObject)
-                {
-                    Destroy(b);
-                }
-            }
-            Destroy(gameObject);
         }
     }
 }

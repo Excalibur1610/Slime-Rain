@@ -8,7 +8,7 @@ public class ColorFade : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        float t = GameManager.endCounter / 500f;
+        float t = GameManager.endCounter / 200f;
         ob.material.Lerp(initial, final, t);
 	}
 }

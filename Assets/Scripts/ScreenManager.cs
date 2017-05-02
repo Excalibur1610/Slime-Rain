@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ScreenManager : MonoBehaviour{
     private static int scene;
@@ -23,9 +24,17 @@ public class ScreenManager : MonoBehaviour{
     public GameObject bullet;
     public GameObject againButton;
     public GameObject quitButton;
+    public GameObject submitButton;
+    public GameObject nameTextBox;
+    public Text nameText;
+    public GameObject docileSlime1;
+    public GameObject docileSlime2;
+    public GameObject docileSlime3;
+    public Text[] rNames;
+    public Text[] rScores;
     private bool play;
-    private float height;
-    private float width;
+    public static float height;
+    public static float width;
     private bool targetsSet;
     private float c1;
     private float c2;
@@ -36,10 +45,13 @@ public class ScreenManager : MonoBehaviour{
     private Vector3 end1;
     private Vector3 end2;
     private Vector3 end3;
-    private static bool submit, spawnSubUI;
+    private static bool submit, spawnSubUI, check;
+    private static ScoreReaderWriter scoretrack;
+    public static string pName;
 
     void Start()
     {
+        pName = "";
         scene = scen;
         counter = 0;
         play = true;
@@ -47,12 +59,17 @@ public class ScreenManager : MonoBehaviour{
         if (scene == 1)
         {
             Screen.SetResolution(800, 600, true);
-            submit = false;
+            submit = true;
             spawnSubUI = false;
+            check = false;
         }
         if (scene == 0 || scene == 2)
         {
             Screen.SetResolution(600, 400, false);
+        }
+        if (scene == 1 || scene == 2)
+        {
+            scoretrack = new ScoreReaderWriter();
         }
         height = Camera.main.orthographicSize * 2f;
         width = height * Screen.width / Screen.height;
@@ -71,15 +88,16 @@ public class ScreenManager : MonoBehaviour{
             c1 = d1 / (4 * Time.deltaTime);
             c2 = d2 / (4 * Time.deltaTime);
             c3 = d3 / (3.5f * Time.deltaTime);
-            Debug.Log("start1: " + start1);
-            Debug.Log("start2: " + start2);
-            Debug.Log("start3: " + start3);
-            Debug.Log("end1: " + end1);
-            Debug.Log("end2: " + end2);
-            Debug.Log("end3: " + end3);
-            Debug.Log("count1: " + c1);
-            Debug.Log("count2: " + c2);
-            Debug.Log("count3: " + c3);
+        }
+        if (scene == 2)
+        {
+            string[] topNames = scoretrack.getNames();
+            float[] topScores = scoretrack.getScores();
+            for (int i = 0; i < 10; i++)
+            {
+                rNames[i].text = topNames[i];
+                rScores[i].text = "" + topScores[i];
+            }
         }
     }
 
@@ -92,9 +110,9 @@ public class ScreenManager : MonoBehaviour{
                 case 0:
                     if (!targetsSet)
                     {
-                        Spawner.Spawn(target1, start1);
-                        Spawner.Spawn(target2, start2);
-                        Spawner.Spawn(target3, start3);
+                        Spawner.Spawn(target1, start1, false);
+                        Spawner.Spawn(target2, start2, false);
+                        Spawner.Spawn(target3, start3, false);
                         targetsSet = true;
                     }
                     if (counter == -1)
@@ -114,9 +132,9 @@ public class ScreenManager : MonoBehaviour{
                     }
                     else if (counter == 860)
                     {
-                        Spawner.Spawn(slimeButton1, end1);
-                        Spawner.Spawn(slimeButton3, end3);
-                        Spawner.Spawn(slimeButton2, end2);
+                        Spawner.Spawn(slimeButton1, end1, false);
+                        Spawner.Spawn(slimeButton3, end3, false);
+                        Spawner.Spawn(slimeButton2, end2, false);
                     }
                     else if (counter == 900 + (int)c1)
                     {
@@ -142,9 +160,8 @@ public class ScreenManager : MonoBehaviour{
                         if (Input.GetButtonDown("Fire1"))
                         {
                             Vector3 pos = Input.mousePosition;
-                            pos = new Vector3((4.5f * ((pos.x / Screen.width) - .5f) * 1.9f), (6.5f * ((pos.y / Screen.height) - .5f) + 3.12f), -10);
-                            Spawner.Spawn(bullet, new Vector2(pos.x, pos.y));
-                            //Debug.Log("Bullet @ " + GameObject.FindGameObjectWithTag("bullet").transform.position);
+                            pos = new Vector3((4.5f * ((pos.x / Screen.width) - .5f) * 1.9f), (6.5f * ((pos.y / Screen.height) - .5f) + 3.5f), -2.5f);
+                            Spawner.Spawn(bullet, pos, true);
                         }
                         if (counter >= 500)
                         {
@@ -172,17 +189,64 @@ public class ScreenManager : MonoBehaviour{
                     }
                     else
                     {
-                        counter = -1;
-                        if (counter < 0)
+                        if (scoretrack.highScore(GameManager.score) && !spawnSubUI)
+                        {
+                            submit = false;
+                            Spawner.Spawn(nameTextBox, parent);
+                            Spawner.Spawn(submitButton, parent);
+                            spawnSubUI = true;
+                        }
+                        else if (!check)
+                        {
+                            submit = DoClick2.submitted;
+                            check = true;
+                            pName = nameText.text;
+                            var buttons = GameObject.FindGameObjectsWithTag("submission");
+                            foreach (GameObject b in buttons)
+                            {
+                                    Destroy(b);
+                            }
+                            scoretrack.addScore(pName, GameManager.score);
+                        }
+                        else if (submit)
                         {
                             Spawner.Spawn(againButton, parent);
                             Spawner.Spawn(quitButton, parent);
-                            counter = 0;
+                            submit = false;
                         }
                     }
                     break;
                 case 2:
-                    counter = 0;
+                    if (counter < 420 && counter % 20 == 0)
+                    {
+                        float rand = Random.Range(1, 75);
+                        float randx = Random.Range((-1f) * (2.7f / 4.7f) * (width / 2f), (2.7f / 4.7f) * (width / 2f));
+                        float randy = Random.Range((17 / 6.5f) * (height / 2f), (21 / 6.5f) * (height / 2f));
+                        if (rand <= 25)
+                        {
+                            Spawner.Spawn(docileSlime1, new Vector2(randx, randy));
+                        }
+                        else if (rand <= 50)
+                        {
+                            Spawner.Spawn(docileSlime2, new Vector2(randx, randy));
+                        }
+                        else
+                        {
+                            Spawner.Spawn(docileSlime3, new Vector2(randx, randy));
+                        }
+
+                    }
+                    if (counter >= 100000000)
+                    {
+                        var docileSlimes = GameObject.FindGameObjectsWithTag("dSlime");
+                        foreach (GameObject d in docileSlimes)
+                        {
+                            Destroy(d);
+                        }
+                        counter = 0;
+                    }
+                    else
+                        counter++;
                     break;
                 case -1:
                     counter = 0;
