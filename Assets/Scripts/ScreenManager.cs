@@ -8,12 +8,6 @@ public class ScreenManager : MonoBehaviour{
     private static int scene;
     public int scen;
     private int counter;
-    public Object slimeButton1;
-    public Object slimeButton3;
-    public Object slimeButton2;
-    public Object target1;
-    public Object target2;
-    public Object target3;
     public GameObject playButton;
     public GameObject scoresButton;
     public GameObject exitButton;
@@ -35,16 +29,6 @@ public class ScreenManager : MonoBehaviour{
     private bool play;
     public static float height;
     public static float width;
-    private bool targetsSet;
-    private float c1;
-    private float c2;
-    private float c3;
-    private Vector3 start1;
-    private Vector3 start2;
-    private Vector3 start3;
-    private Vector3 end1;
-    private Vector3 end2;
-    private Vector3 end3;
     private static bool submit, spawnSubUI, check;
     private static ScoreReaderWriter scoretrack;
     public static string pName;
@@ -55,7 +39,6 @@ public class ScreenManager : MonoBehaviour{
         scene = scen;
         counter = 0;
         play = true;
-        targetsSet = false;
         if (scene == 1)
         {
             Screen.SetResolution(800, 600, true);
@@ -73,22 +56,6 @@ public class ScreenManager : MonoBehaviour{
         }
         height = Camera.main.orthographicSize * 2f;
         width = height * Screen.width / Screen.height;
-        if (scene == 0)
-        {
-            float d1, d2, d3;
-            start1 = new Vector3((-1f) * (2f / 4.5f) * (width / 2f), (3.7f / 6.5f) * (height / 2f), -2);
-            start2 = new Vector3((2f / 4.5f) * (width / 2f), (2.7f / 6.5f) * (height / 2f), -3);
-            start3 = new Vector3(0, (1f / 6.5f) * (height / 2f), -2.5f);
-            end1 = new Vector3((-6 / 4.5f) * (width / 2f), (17 / 6.5f) * (height / 2f), -2);
-            end2 = new Vector3((-5 / 4.5f) * (width / 2f), (19 / 6.5f) * (height / 2f), -2.5f);
-            end3 = new Vector3((-4 / 4.5f) * (width / 2f), (21 / 6.5f) * (height / 2f), -3);
-            d1 = Vector3.Magnitude(start1 - end1);
-            d2 = Vector3.Magnitude(start2 - end2);
-            d3 = Vector3.Magnitude(start3 - end3);
-            c1 = d1 / (4 * Time.deltaTime);
-            c2 = d2 / (4 * Time.deltaTime);
-            c3 = d3 / (3.5f * Time.deltaTime);
-        }
         if (scene == 2)
         {
             string[] topNames = scoretrack.getNames();
@@ -108,51 +75,48 @@ public class ScreenManager : MonoBehaviour{
             switch (scene)
             {
                 case 0:
-                    if (!targetsSet)
+                    if (counter >= 800 && (counter - 800) < 420 && (counter - 800) % 20 == 0)
                     {
-                        Spawner.Spawn(target1, start1, false);
-                        Spawner.Spawn(target2, start2, false);
-                        Spawner.Spawn(target3, start3, false);
-                        targetsSet = true;
+                        float rand = Random.Range(1, 75);
+                        float randx = Random.Range((-1f) * (2.7f / 4.7f) * (width / 2f), (2.7f / 4.7f) * (width / 2f));
+                        float randy = Random.Range((17 / 6.5f) * (height / 2f), (21 / 6.5f) * (height / 2f));
+                        if (rand <= 25)
+                        {
+                            Spawner.Spawn(docileSlime1, new Vector2(randx, randy));
+                        }
+                        else if (rand <= 50)
+                        {
+                            Spawner.Spawn(docileSlime2, new Vector2(randx, randy));
+                        }
+                        else
+                        {
+                            Spawner.Spawn(docileSlime3, new Vector2(randx, randy));
+                        }
+
                     }
-                    if (counter == -1)
+                    if (counter >= 100000000)
                     {
-                        Destroy(target1);
-                        Destroy(target2);
-                        Destroy(target3);
-                        Destroy(slimeButton1);
-                        Destroy(slimeButton2);
-                        Destroy(slimeButton3);
-                        Destroy(playButton);
-                        Destroy(scoresButton);
-                        Destroy(exitButton);
-                        targetsSet = false;
+                        var docileSlimes = GameObject.FindGameObjectsWithTag("dSlime");
+                        foreach (GameObject d in docileSlimes)
+                        {
+                            Destroy(d);
+                        }
                         counter = 0;
-                        SceneManager.LoadScene("MainScreen");
                     }
-                    else if (counter == 860)
-                    {
-                        Spawner.Spawn(slimeButton1, end1, false);
-                        Spawner.Spawn(slimeButton3, end3, false);
-                        Spawner.Spawn(slimeButton2, end2, false);
-                    }
-                    else if (counter == 900 + (int)c1)
+                    else
+                        counter++;
+                    if (counter == 980)
                     {
                         Spawner.Spawn(playButton, parent);
                     }
-                    else if (counter == 890 + (int) c2)
+                    else if (counter == 1000)
                     {
                         Spawner.Spawn(scoresButton, parent);
                     }
-                    else if (counter == 910 + (int) c3)
+                    else if (counter == 1020)
                     {
                         Spawner.Spawn(exitButton, parent);
                     }
-                    else if (counter == 1000000000)
-                    {
-                        counter = -2;
-                    }
-                    counter++;
                     break;
                 case 1:
                     if (GameManager.CheckGame())
