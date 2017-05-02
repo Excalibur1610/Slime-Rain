@@ -29,8 +29,6 @@ public class OnCollision : MonoBehaviour {
             {
                 GameManager.endCounter += (int)(transform.position.z * (-2));
                 Destroy(gameObject);
-
-                Debug.Log("Percent progress to end: " + GameManager.endCounter / 500f);
             }
         }
     }
