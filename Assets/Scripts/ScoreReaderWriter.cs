@@ -18,6 +18,7 @@ public class ScoreReaderWriter {
         filestream = new FileStream("scores.dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
         numScores = 0;
         u32 = Encoding.UTF32;
+        ReadFrom();
     }
 
     ~ScoreReaderWriter()
@@ -25,7 +26,7 @@ public class ScoreReaderWriter {
         filestream.Close();
     }
 
-    private int ReadFrom()
+    private void ReadFrom()
     {
         byte[] data = new byte[1024];
         ArrayList content = new ArrayList();
@@ -55,7 +56,6 @@ public class ScoreReaderWriter {
         if (content.Count == 0)
         {
             numScores = -1;
-            return 0;
         }
         else
         {
@@ -73,7 +73,6 @@ public class ScoreReaderWriter {
                     }
             }
             numScores = index;
-            return (index + 1);
         }
     }
 
