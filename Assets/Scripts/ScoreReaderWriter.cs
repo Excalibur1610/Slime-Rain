@@ -15,8 +15,15 @@ public class ScoreReaderWriter {
         names = new string[] { "", "", "", "", "", "", "", "", "", "" };
         filestream = new FileStream("scores.dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
         numScores = 0;
-        u32 = Encoding.UTF32;
-        ReadFrom();
+        u32 = Encoding.Unicode;
+        if (!ReadFrom())
+        {
+            filestream = new FileStream("scores.dat", FileMode.Truncate, FileAccess.ReadWrite);
+            high_scores = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            names = new string[] { "", "", "", "", "", "", "", "", "", "" };
+            numScores = 0;
+            Debug.Log("Score file corrupted.  Creating new file....");
+        }
     }
 
     ~ScoreReaderWriter()
@@ -24,7 +31,7 @@ public class ScoreReaderWriter {
         filestream.Close();
     }
 
-    private void ReadFrom()
+    private bool ReadFrom()
     {
         if (filestream.Length == 0)
         {
@@ -32,44 +39,38 @@ public class ScoreReaderWriter {
         }
         else
         {
-            byte[] data = new byte[filestream.Length];
+            byte[] data = new byte[1024];
             int bData;
-            string input = "";
             for (int i = 0; (bData = filestream.ReadByte()) != -1; i++)
             {
                 data[i] = (byte)bData;
             }
-            input = u32.GetString(data);
-            Debug.Log(input);
-            char[] cData = input.ToCharArray();
-            string temp = "";
+            string[] input = u32.GetString(data).Split('\n');
             int index = 0;
-            for (int i = 0; i < cData.Length; i++)
+            bool isName = true;
+            foreach (string s in input)
             {
-                if (cData[i] == '\n' && temp.Length > 0)
+                if (isName)
+                {
+                    names[index] = s;
+                }
+                else
                 {
                     float score;
-                    if (float.TryParse(temp, out score))
+                    if (float.TryParse(s, out score))
                     {
                         high_scores[index++] = score;
                     }
                     else
                     {
-                        names[index] = temp;
+                        return false;
                     }
-                    temp = "";
                 }
-                else
-                {
-                    temp += cData;
-                }
+                isName = !isName;
             }
-            numScores = index;
+            numScores = index-1;
         }
-        for(int i = 0; i <= numScores; i++)
-        {
-            Debug.Log("Name: " + names[i] + "\nScore: " + high_scores[i]);
-        }
+        return true;
     }
 
     private bool WriteTo()
@@ -77,7 +78,7 @@ public class ScoreReaderWriter {
         try
         {
             string data = "";
-            for (int i = 0; i < numScores; i++)
+            for (int i = 0; i <= numScores; i++)
             {
                 data += names[i] + "\n" + high_scores[i] + "\n";
             }
