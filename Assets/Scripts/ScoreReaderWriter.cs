@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using UnityEngine;
 
@@ -18,6 +16,7 @@ public class ScoreReaderWriter {
         filestream = new FileStream("scores.dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
         numScores = 0;
         u32 = Encoding.UTF32;
+        ReadFrom();
     }
 
     ~ScoreReaderWriter()
@@ -25,55 +24,51 @@ public class ScoreReaderWriter {
         filestream.Close();
     }
 
-    private int ReadFrom()
+    private void ReadFrom()
     {
-        byte[] data = new byte[1024];
-        ArrayList content = new ArrayList();
-        int len;
-        string input = "";
-        while ((len = filestream.Read(data,0,1024)) != 0)
-        {
-            input = u32.GetString(data);
-            for (int i = 0; i < len; i++)
-            {
-                char[] intermediate = input.ToCharArray();
-                string temp= "";
-                if (intermediate[i] != '\n' && intermediate[i] != '\r')
-                {
-                    temp += intermediate[i];
-                }
-                else
-                {
-                    if (temp.CompareTo("") != 0)
-                    {
-                        content.Add(temp);
-                        temp = "";
-                    }
-                }
-            }
-        }
-        if (content.Count == 0)
+        if (filestream.Length == 0)
         {
             numScores = -1;
-            return 0;
         }
         else
         {
-            int index = 0;
-            foreach (string s in content)
+            byte[] data = new byte[filestream.Length];
+            int bData;
+            string input = "";
+            for (int i = 0; (bData = filestream.ReadByte()) != -1; i++)
             {
-                float score;
-                    if (float.TryParse(s, out score))
+                data[i] = (byte)bData;
+            }
+            input = u32.GetString(data);
+            Debug.Log(input);
+            char[] cData = input.ToCharArray();
+            string temp = "";
+            int index = 0;
+            for (int i = 0; i < cData.Length; i++)
+            {
+                if (cData[i] == '\n' && temp.Length > 0)
+                {
+                    float score;
+                    if (float.TryParse(temp, out score))
                     {
                         high_scores[index++] = score;
                     }
                     else
                     {
-                        names[index] = s;
+                        names[index] = temp;
                     }
+                    temp = "";
+                }
+                else
+                {
+                    temp += cData;
+                }
             }
             numScores = index;
-            return (index + 1);
+        }
+        for(int i = 0; i <= numScores; i++)
+        {
+            Debug.Log("Name: " + names[i] + "\nScore: " + high_scores[i]);
         }
     }
 
@@ -81,14 +76,13 @@ public class ScoreReaderWriter {
     {
         try
         {
+            string data = "";
             for (int i = 0; i < numScores; i++)
             {
-                string data = "";
-                data += high_scores[i] + "\n" + names[i] + "\n";
-                char[] intermediate = data.ToCharArray();
-                byte[] output = u32.GetBytes(intermediate);
-                filestream.Write(output, 0, output.Length);
+                data += names[i] + "\n" + high_scores[i] + "\n";
             }
+            byte[] output = u32.GetBytes(data);
+            filestream.Write(output, 0, output.Length);
             return true;
         }
         catch
