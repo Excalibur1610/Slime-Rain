@@ -29,6 +29,7 @@ public class ScoreReaderWriter {
     ~ScoreReaderWriter()
     {
         filestream.Close();
+        filestream.Dispose();
     }
 
     private bool ReadFrom()
