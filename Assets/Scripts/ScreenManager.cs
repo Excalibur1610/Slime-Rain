@@ -5,9 +5,9 @@ public class ScreenManager : MonoBehaviour{
     private static int scene;
     public int scen;
     private int counter;
-    public GameObject playButton;
-    public GameObject scoresButton;
-    public GameObject exitButton;
+    //public GameObject playButton;
+    //public GameObject scoresButton;
+    //public GameObject exitButton;
     public GameObject greenSlime;
     public GameObject orangeSlime;
     public GameObject redSlime;
@@ -102,18 +102,18 @@ public class ScreenManager : MonoBehaviour{
                     }
                     else
                         counter++;
-                    if (counter == 980)
-                    {
-                        Spawner.Spawn(playButton, parent);
-                    }
-                    else if (counter == 1000)
-                    {
-                        Spawner.Spawn(scoresButton, parent);
-                    }
-                    else if (counter == 1020)
-                    {
-                        Spawner.Spawn(exitButton, parent);
-                    }
+                    //if (counter == 980)
+                    //{
+                    //    Spawner.Spawn(playButton, parent);
+                    //}
+                    //else if (counter == 1000)
+                    //{
+                    //    Spawner.Spawn(scoresButton, parent);
+                    //}
+                    //else if (counter == 1020)
+                    //{
+                    //    Spawner.Spawn(exitButton, parent);
+                    //}
                     break;
                 case 1:
                     if (GameManager.CheckGame())
