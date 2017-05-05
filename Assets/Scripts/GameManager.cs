@@ -7,11 +7,13 @@ public class GameManager : MonoBehaviour {
     //private int highScore;
     private const int END_GAME = 200;
     public Text scoreText;
+    private static bool stageAdvanced;
 
 	// Use this for initialization
 	void Start () {
         score = 0;
         endCounter = 0;
+        stageAdvanced = false;
 	}
 	
 	// Update is called once per frame
@@ -31,7 +33,21 @@ public class GameManager : MonoBehaviour {
     public static bool CheckGame()
     {
         if (endCounter >= END_GAME)
+        {
+            if (!stageAdvanced)
+            {
+                if (ScreenManager.scoretrack.highScore(GameManager.score))
+                {
+                    ScreenManager.gameStage = 1;
+                }
+                else
+                {
+                    ScreenManager.gameStage = 3;
+                }
+                stageAdvanced = true;
+            }
             return false;
+        }
         return true;
     }
 }

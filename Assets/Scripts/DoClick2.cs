@@ -1,14 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class DoClick2 : MonoBehaviour {
     public string actionName;
-    public static bool submitted;
-
-    public void Start()
-    {
-        submitted = false;
-    }
+    public Text nameText;
 
 	public void OnClick()
     {
@@ -28,7 +24,8 @@ public class DoClick2 : MonoBehaviour {
         }
         else if (actionName.CompareTo("Submit") == 0)
         {
-            submitted = true;
+            ScreenManager.gameStage = 3;
+            ScreenManager.pName = nameText.text;
         }
         else if (actionName.CompareTo("Quit") == 0)
         {

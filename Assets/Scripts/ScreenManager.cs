@@ -5,9 +5,9 @@ public class ScreenManager : MonoBehaviour{
     private static int scene;
     public int scen;
     private int counter;
-    public GameObject playButton;
-    public GameObject scoresButton;
-    public GameObject exitButton;
+    //public GameObject playButton;
+    //public GameObject scoresButton;
+    //public GameObject exitButton;
     public GameObject greenSlime;
     public GameObject orangeSlime;
     public GameObject redSlime;
@@ -17,7 +17,6 @@ public class ScreenManager : MonoBehaviour{
     public GameObject quitButton;
     public GameObject submitButton;
     public GameObject nameTextBox;
-    public Text nameText;
     public GameObject docileSlime1;
     public GameObject docileSlime2;
     public GameObject docileSlime3;
@@ -26,9 +25,9 @@ public class ScreenManager : MonoBehaviour{
     private bool play;
     public static float height;
     public static float width;
-    private static bool submit, spawnSubUI, check;
-    private static ScoreReaderWriter scoretrack;
+    public static ScoreReaderWriter scoretrack;
     public static string pName;
+    public static int gameStage;
 
     void Start()
     {
@@ -39,9 +38,6 @@ public class ScreenManager : MonoBehaviour{
         if (scene == 1)
         {
             Screen.SetResolution(800, 600, true);
-            submit = true;
-            spawnSubUI = false;
-            check = false;
         }
         if (scene == 0 || scene == 2)
         {
@@ -63,6 +59,7 @@ public class ScreenManager : MonoBehaviour{
                 rScores[i].text = "" + topScores[i];
             }
         }
+        gameStage = 0;
     }
 
     void Update()
@@ -102,18 +99,18 @@ public class ScreenManager : MonoBehaviour{
                     }
                     else
                         counter++;
-                    if (counter == 980)
-                    {
-                        Spawner.Spawn(playButton, parent);
-                    }
-                    else if (counter == 1000)
-                    {
-                        Spawner.Spawn(scoresButton, parent);
-                    }
-                    else if (counter == 1020)
-                    {
-                        Spawner.Spawn(exitButton, parent);
-                    }
+                    //if (counter == 980)
+                    //{
+                    //    Spawner.Spawn(playButton, parent);
+                    //}
+                    //else if (counter == 1000)
+                    //{
+                    //    Spawner.Spawn(scoresButton, parent);
+                    //}
+                    //else if (counter == 1020)
+                    //{
+                    //    Spawner.Spawn(exitButton, parent);
+                    //}
                     break;
                 case 1:
                     if (GameManager.CheckGame())
@@ -150,30 +147,27 @@ public class ScreenManager : MonoBehaviour{
                     }
                     else
                     {
-                        if (scoretrack.highScore(GameManager.score) && !spawnSubUI)
+                        if (gameStage == 1)
                         {
-                            submit = false;
                             Spawner.Spawn(nameTextBox, parent);
                             Spawner.Spawn(submitButton, parent);
-                            spawnSubUI = true;
+                            gameStage = 2;
                         }
-                        else if (!check)
+                        else if (gameStage == 3)
                         {
-                            submit = DoClick2.submitted;
-                            check = true;
-                            pName = nameText.text;
                             var buttons = GameObject.FindGameObjectsWithTag("submission");
                             foreach (GameObject b in buttons)
                             {
                                     Destroy(b);
                             }
                             scoretrack.addScore(pName, GameManager.score);
+                            gameStage = 4;
                         }
-                        else if (submit)
+                        else if (gameStage == 4)
                         {
                             Spawner.Spawn(againButton, parent);
                             Spawner.Spawn(quitButton, parent);
-                            submit = false;
+                            gameStage = 5;
                         }
                     }
                     break;
