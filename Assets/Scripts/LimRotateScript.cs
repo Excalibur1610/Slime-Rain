@@ -28,10 +28,6 @@ public class LimRotateScript : MonoBehaviour {
         {
             transform.rotation = Quaternion.identity;
         }
-        if (count >= 725)
-        {
-            SceneManager.LoadScene("MainScreen");
-        }
         count++;
     }
 }
