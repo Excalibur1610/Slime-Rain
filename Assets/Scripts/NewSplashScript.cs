@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class NewSplashScript : MonoBehaviour {
     private int count;
     public int switchCheck;
-    public Scene next;
+    public string nextScene;
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +14,7 @@ public class NewSplashScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (count >= switchCheck)
-            SceneManager.LoadScene(next.name);
+            SceneManager.LoadScene(nextScene);
         count++;
     }
 }
