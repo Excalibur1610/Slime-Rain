@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/ScoresScreen.unity
+- path: Assets/Scenes/SeriesScreen.unity
   isLoaded: 1
   isActive: 1

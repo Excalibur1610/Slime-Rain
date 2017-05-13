@@ -5,9 +5,13 @@ public class ScreenManager : MonoBehaviour{
     private static int scene;
     public int scen;
     private int counter;
-    //public GameObject playButton;
-    //public GameObject scoresButton;
-    //public GameObject exitButton;
+    public GameObject playButton;
+    public GameObject scoresButton;
+    public GameObject exitButton;
+    public GameObject instructionsButton;
+    public GameObject slimeCloud;
+    public GameObject instructionsText;
+    public GameObject backButton;
     public GameObject greenSlime;
     public GameObject orangeSlime;
     public GameObject redSlime;
@@ -28,6 +32,7 @@ public class ScreenManager : MonoBehaviour{
     public static ScoreReaderWriter scoretrack;
     public static string pName;
     public static int gameStage;
+    private bool main;
 
     void Start()
     {
@@ -60,6 +65,8 @@ public class ScreenManager : MonoBehaviour{
             }
         }
         gameStage = 0;
+        DoClick2.instructions = false;
+        main = true;
     }
 
     void Update()
@@ -88,6 +95,36 @@ public class ScreenManager : MonoBehaviour{
                         }
 
                     }
+                    if (DoClick2.instructions)
+                    {
+                        if (main)
+                        {
+                            var mainButtons = GameObject.FindGameObjectsWithTag("mainButtons");
+                            foreach (GameObject b in mainButtons)
+                            {
+                                Destroy(b);
+                            }
+                            Spawner.Spawn(instructionsText, parent);
+                            Spawner.Spawn(backButton, parent);
+                            main = false;
+                        }
+                    }
+                    else
+                    {
+                        if (!main)
+                        {
+                            var instructions = GameObject.FindGameObjectsWithTag("instructions");
+                            foreach (GameObject i in instructions)
+                            {
+                                Destroy(i);
+                            }
+                            Spawner.Spawn(playButton, parent);
+                            Spawner.Spawn(exitButton, parent);
+                            Spawner.Spawn(scoresButton, parent);
+                            Spawner.Spawn(instructionsButton, parent);
+                            main = true;
+                        }
+                    }
                     if (counter >= 100000000)
                     {
                         var docileSlimes = GameObject.FindGameObjectsWithTag("dSlime");
@@ -95,7 +132,9 @@ public class ScreenManager : MonoBehaviour{
                         {
                             Destroy(d);
                         }
+                        Destroy(slimeCloud);
                         counter = 0;
+                        Spawner.Spawn(slimeCloud, slimeCloud.transform.position, false);
                     }
                     else
                         counter++;

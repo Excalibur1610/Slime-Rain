@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class DoClick2 : MonoBehaviour {
     public string actionName;
     public Text nameText;
+    public static bool instructions;
 
 	public void OnClick()
     {
@@ -32,6 +33,14 @@ public class DoClick2 : MonoBehaviour {
             GameManager.score = 0;
             GameManager.endCounter = 0;
             SceneManager.LoadScene("MainScreen");
+        }
+        else if (actionName.CompareTo("Instructions") == 0)
+        {
+            instructions = true;
+        }
+        else if (actionName.CompareTo("Back") == 0)
+        {
+            instructions = false;
         }
     }
 }
