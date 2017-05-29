@@ -85,6 +85,7 @@ public class ScoreReaderWriter {
             }
             byte[] output = u32.GetBytes(data);
             filestream.Write(output, 0, output.Length);
+            filestream.Flush();
             return true;
         }
         catch
