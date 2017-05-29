@@ -27,6 +27,7 @@ public class OnCollision : MonoBehaviour {
             {
                 GameManager.endCounter += (int)(transform.position.z * (-2));
                 Destroy(gameObject);
+                GetComponent<AudioSource>().enabled = true;
                 GetComponent<AudioSource>().Play();
             }
         }
