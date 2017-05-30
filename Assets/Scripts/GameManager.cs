@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
         {
             if (!stageAdvanced)
             {
-                if (ScreenManager.scoretrack.highScore(GameManager.score))
+                if (ScreenManager.scoretrack.HighScore(GameManager.score))
                 {
                     ScreenManager.gameStage = 1;
                 }

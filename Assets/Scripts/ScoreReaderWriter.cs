@@ -13,12 +13,24 @@ public class ScoreReaderWriter {
     {
         high_scores = new float[] { 0,0,0,0,0,0,0,0,0,0 };
         names = new string[] { "", "", "", "", "", "", "", "", "", "" };
-        filestream = new FileStream("scores.dat", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        if (File.Exists("scores.dat"))
+        {
+            filestream = new FileStream("scores.dat", FileMode.Open, FileAccess.ReadWrite);
+        }
+        else
+        {
+            File.Create("scores.dat").Dispose();
+            filestream = new FileStream("scores.dat", FileMode.Open, FileAccess.ReadWrite);
+        }
         numScores = 0;
-        u32 = Encoding.Unicode;
+        u32 = Encoding.ASCII;
         if (!ReadFrom())
         {
-            filestream = new FileStream("scores.dat", FileMode.Truncate, FileAccess.ReadWrite);
+            filestream.Dispose();
+            filestream.Close();
+            File.Delete("scores.dat");
+            File.Create("scores.dat").Dispose();
+            filestream = new FileStream("scores.dat", FileMode.Open, FileAccess.ReadWrite);
             high_scores = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             names = new string[] { "", "", "", "", "", "", "", "", "", "" };
             numScores = 0;
@@ -28,19 +40,25 @@ public class ScoreReaderWriter {
 
     ~ScoreReaderWriter()
     {
-        filestream.Close();
         filestream.Dispose();
+        filestream.Close();
+    }
+
+    public void Dispose()
+    {
+        filestream.Dispose();
+        filestream.Close();
     }
 
     private bool ReadFrom()
     {
         if (filestream.Length == 0)
         {
-            numScores = -1;
+            numScores = 0;
         }
         else
         {
-            byte[] data = new byte[1024];
+            byte[] data = new byte[8192];
             int bData;
             for (int i = 0; (bData = filestream.ReadByte()) != -1; i++)
             {
@@ -94,7 +112,7 @@ public class ScoreReaderWriter {
         }
     }
 
-    public bool highScore(float score)
+    public bool HighScore(float score)
     {
         return (CompareScore(score) >= 0);
     }
@@ -122,17 +140,17 @@ public class ScoreReaderWriter {
         }
     }
 
-    public float[] getScores()
+    public float[] GetScores()
     {
         return high_scores;
     }
 
-    public string[] getNames()
+    public string[] GetNames()
     {
         return names;
     }
 
-    public bool addScore(string name, float score)
+    public bool AddScore(string name, float score)
     {
         int index = 0;
         if ((index = CompareScore(score)) < 0)
@@ -155,6 +173,7 @@ public class ScoreReaderWriter {
             if (!WriteTo())
             {
                 Debug.Log("Error: Failed to write to save file");
+                return false;
             }
             return true;
         }
