@@ -30,7 +30,7 @@ public class ScreenManager : MonoBehaviour{
     public static float height;
     public static float width;
     public static ScoreReaderWriter scoretrack;
-    public static string pName;
+    private static string pName;
     public static int gameStage;
     private bool main;
 
@@ -48,16 +48,13 @@ public class ScreenManager : MonoBehaviour{
         {
             Screen.SetResolution(600, 400, false);
         }
-        if (scene == 1 || scene == 2)
-        {
-            scoretrack = new ScoreReaderWriter();
-        }
+        scoretrack = new ScoreReaderWriter();
         height = Camera.main.orthographicSize * 2f;
         width = height * Screen.width / Screen.height;
         if (scene == 2)
         {
-            string[] topNames = scoretrack.getNames();
-            float[] topScores = scoretrack.getScores();
+            string[] topNames = scoretrack.GetNames();
+            float[] topScores = scoretrack.GetScores();
             for (int i = 0; i < 10; i++)
             {
                 rNames[i].text = topNames[i];
@@ -192,6 +189,10 @@ public class ScreenManager : MonoBehaviour{
                             Spawner.Spawn(submitButton, parent);
                             gameStage = 2;
                         }
+                        else if (gameStage == 2)
+                        {
+                            pName = GameObject.Find("Name").GetComponent<Text>().text;
+                        }
                         else if (gameStage == 3)
                         {
                             var buttons = GameObject.FindGameObjectsWithTag("submission");
@@ -199,7 +200,7 @@ public class ScreenManager : MonoBehaviour{
                             {
                                     Destroy(b);
                             }
-                            scoretrack.addScore(pName, GameManager.score);
+                            scoretrack.AddScore(pName, GameManager.score);
                             gameStage = 4;
                         }
                         else if (gameStage == 4)
